@@ -74,18 +74,21 @@ class EasyFrame(tkinter.Frame):
         """Resets the window's title to title."""
         self.master.title(title)
 
+    def setIcon(self, icon):
+        self.master.iconphoto(True,icon)
+
     # Methods to add widgets to the window.  The row and column in
     # the grid are required arguments.
 
     def addLabel(self, text, row, column,
                  columnspan=1, rowspan=1,
                  sticky=N + W, font=None,
-                 background="white", foreground="black"):
+                 background="white", foreground="black", image=None):
         """Creates and inserts a label at the row and column,
         and returns the label."""
         label = tkinter.Label(self, text=text, font=font,
                               background=background,
-                              foreground=foreground)
+                              foreground=foreground, image=image)
         self.rowconfigure(row, weight=1)
         self.columnconfigure(column, weight=1)
         label.grid(row=row, column=column,
@@ -124,10 +127,10 @@ class EasyFrame(tkinter.Frame):
 
     def addIntegerField(self, value, row, column,
                         columnspan=1, rowspan=1,
-                        width=10, sticky=N + E, state=NORMAL):
+                        width=10, sticky=N + E, state=NORMAL, validationcommand=None, validation="none"):
         """Creates and inserts an integer field at the row and column,
         and returns the integer field."""
-        field = IntegerField(self, value, width, state)
+        field = IntegerField(self, value, width, state, validationcommand, validation)
         self.rowconfigure(row, weight=1)
         self.columnconfigure(column, weight=1)
         field.grid(row=row, column=column,
@@ -284,12 +287,12 @@ class AbstractField(tkinter.Entry):
     """Represents common features of float fields, integer fields,
     and text fields."""
 
-    def __init__(self, parent, value, width, state):
+    def __init__(self, parent, value, width, state, validation_command=None, validation='none'):
         self.var = tkinter.StringVar()
         self.setValue(value)
         tkinter.Entry.__init__(self, parent,
                                textvariable=self.var,
-                               width=width, state=state)
+                               width=width, state=state, validatecommand=validation_command, validate=validation)
 
     def setValue(self, value):
         self.var.set(value)
@@ -325,8 +328,8 @@ class FloatField(AbstractField):
 class IntegerField(AbstractField):
     """Represents a single line box for I/O of integers."""
 
-    def __init__(self, parent, value, width, state):
-        AbstractField.__init__(self, parent, value, width, state)
+    def __init__(self, parent, value, width, state, validation_command=None, validation='none'):
+        AbstractField.__init__(self, parent, value, width, state, validation_command=validation_command, validation=validation)
 
     def getNumber(self):
         """Returns the integer contained in the field.
@@ -750,10 +753,10 @@ class EasyDialog(tkinter.simpledialog.Dialog):
 
     def addLabel(self, master, text, row, column,
                  columnspan=1, rowspan=1,
-                 sticky=N + W, font=None):
+                 sticky=N + W, font=None, image=None):
         """Creates and inserts a label at the row and column,
         and returns the label."""
-        label = tkinter.Label(master, text=text, font=font)
+        label = tkinter.Label(master, text=text, font=font, image=image)
         master.rowconfigure(row, weight=1)
         master.columnconfigure(column, weight=1)
         label.grid(row=row, column=column,
